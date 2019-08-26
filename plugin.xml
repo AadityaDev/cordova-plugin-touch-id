@@ -52,6 +52,9 @@
   <!-- android -->
   <platform name="android">
     <source-file src="src/android/TouchID.java" target-dir="src/cordova/touchid" />
+    <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/cordova/touchid" />
+    <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/cordova/touchid" />
+
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="TouchID">
         <param name="android-package" value="cordova.touchid.TouchID"/>
