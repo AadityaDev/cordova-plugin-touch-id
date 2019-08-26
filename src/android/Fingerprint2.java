@@ -169,14 +169,6 @@ public class Fingerprint extends CordovaPlugin {
 
         final JSONObject arg_object = args.getJSONObject(0);
 
-
-        if (action.equals("isAdi")) {
-            System.out.println("isAdi");
-            Log.v(TAG,"isAdi");
-            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                mCallbackContext.error(errorResponse.put("message", "Fingerprint authentication adi"));
-                mCallbackContext.sendPluginResult(mPluginResult);
-        }else
         if (action.equals("authenticate")) {
             if (!arg_object.has("clientId") || !arg_object.has("clientSecret")) {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);

@@ -2,6 +2,8 @@ function TouchID() {
 }
 
 TouchID.prototype.isAvailable = function (successCallback, errorCallback) {
+  console.log(`success callback is: ${successCallback}`);
+  console.log(`error callback is: ${errorCallback}`);
   cordova.exec(successCallback, errorCallback, "TouchID", "isAvailable", []);
 };
 
@@ -19,6 +21,10 @@ TouchID.prototype.verifyFingerprintWithCustomPasswordFallback = function (messag
 
 TouchID.prototype.verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel = function (message, enterPasswordLabel, successCallback, errorCallback) {
   cordova.exec(successCallback, errorCallback, "TouchID", "verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel", [message, enterPasswordLabel]);
+};
+
+TouchID.prototype.isAdi = (message, successCallback, errorCallback) => {
+  cordova.exec(successCallback, errorCallback, "TouchID", "isAdi", [message]);
 };
 
 TouchID.install = function () {
