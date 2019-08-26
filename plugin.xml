@@ -52,7 +52,7 @@
   <!-- android -->
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
-      <feature name="Fingerprint">
+      <feature name="TouchID">
         <param name="android-package" value="de.niklasmerz.cordova.fingerprint.Fingerprint"/>
       </feature>
     </config-file>

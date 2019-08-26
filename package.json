@@ -5,6 +5,7 @@
   "cordova": {
     "id": "cordova-plugin-touch-id",
     "platforms": [
+      "android",
       "ios"
     ]
   },
@@ -21,7 +22,10 @@
     "Biometric",
     "Scanner",
     "ecosystem:cordova",
-    "cordova-ios"
+    "cordova-ios",
+    "ios",
+    "android",
+    "cordova-android"
   ],
   "engines": [
     {
