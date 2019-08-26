@@ -49,4 +49,16 @@
     <source-file src="src/ios/TouchID.m"/>
   </platform>
 
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="Fingerprint">
+        <param name="android-package" value="de.niklasmerz.cordova.fingerprint.Fingerprint"/>
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    </config-file>
+  </platform>
+
 </plugin>
