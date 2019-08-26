@@ -15,7 +15,7 @@
  * limitations under the License
  */
 
-package de.niklasmerz.cordova.fingerprint;
+package cordova.touchid;
 
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;

@@ -15,7 +15,7 @@
  * limitations under the License
  */
 
-package de.niklasmerz.cordova.fingerprint;
+package cordova.touchid;
 
 import android.annotation.TargetApi;
 import android.content.Context;
