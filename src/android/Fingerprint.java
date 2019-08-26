@@ -62,7 +62,7 @@ import javax.crypto.SecretKey;
 @TargetApi(23)
 public class Fingerprint extends CordovaPlugin {
 
-    public static final String TAG = "Fingerprint";
+    public static final String TAG = "FingerprintAdi";
     public static String packageName;
 
     private static final String DIALOG_FRAGMENT_TAG = "FpAuthDialog";
@@ -253,7 +253,8 @@ public class Fingerprint extends CordovaPlugin {
             }
             return true;
         } else if (action.equals("isAvailable")) {
-            console.log("inside is available");
+            Log.i(TAG, "inside is available");
+            // console.log("inside is available");
             if(mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints()){
                 mPluginResult = new PluginResult(PluginResult.Status.OK, "finger");
                 mCallbackContext.success("finger");
