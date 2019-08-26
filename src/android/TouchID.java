@@ -60,7 +60,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 @TargetApi(23)
-public class Fingerprint extends CordovaPlugin {
+public class TouchID extends CordovaPlugin {
 
     public static final String TAG = "FingerprintAdi";
     public static String packageName;
@@ -95,7 +95,7 @@ public class Fingerprint extends CordovaPlugin {
     /**
      * Constructor.
      */
-    public Fingerprint() {
+    public TouchID() {
     }
 
     /**
@@ -108,7 +108,7 @@ public class Fingerprint extends CordovaPlugin {
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        Log.v(TAG, "Init Fingerprint");
+        Log.v(TAG, "Init TouchID");
         packageName = cordova.getActivity().getApplicationContext().getPackageName();
         mPluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
 
@@ -156,7 +156,7 @@ public class Fingerprint extends CordovaPlugin {
                            JSONArray args,
                            CallbackContext callbackContext) throws JSONException {
         mCallbackContext = callbackContext;
-        Log.v(TAG, "Fingerprint action: " + action);
+        Log.v(TAG, "TouchID action: " + action);
         JSONObject errorResponse = new JSONObject();
 
         if (android.os.Build.VERSION.SDK_INT < 23) {
