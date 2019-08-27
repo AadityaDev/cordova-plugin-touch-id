@@ -77,6 +77,7 @@ public class TouchID extends CordovaPlugin {
 
     public static CallbackContext mCallbackContext;
     public static PluginResult mPluginResult;
+    JSONObject errorResponse = new JSONObject();
 
     /**
      * Alias for our key in the Android Key Store
@@ -157,30 +158,36 @@ public class TouchID extends CordovaPlugin {
                            CallbackContext callbackContext) throws JSONException {
         mCallbackContext = callbackContext;
         Log.v(TAG, "TouchID action: " + action);
-        JSONObject errorResponse = new JSONObject();
+        errorResponse = new JSONObject();
 
-        if (android.os.Build.VERSION.SDK_INT < 23) {
-            Log.e(TAG, "minimum SDK version 23 required");
-            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-            mCallbackContext.error(errorResponse.put("message", "minimum SDK version 23 required"));
-            mCallbackContext.sendPluginResult(mPluginResult);
-            return true;
+        try {
+            if (android.os.Build.VERSION.SDK_INT < 23) {
+                Log.e(TAG, "minimum SDK version 23 required");
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                mCallbackContext.error(errorResponse.put("message", "minimum SDK version 23 required"));
+                mCallbackContext.sendPluginResult(mPluginResult);
+                return true;
+            }
+
+            final JSONObject arg_object = args.getJSONObject(0);
+
+            switch (action) {
+                case "authenticate":
+                    authenticateFingerprint(arg_object);
+                    return true;
+                case "isAdi":
+                    isAdi();
+                    return true;
+                case "isAvailable":
+                    isFingerprintAvailable();
+                    return true;
+                default:
+                    Log.i(TAG, "default action");
+                    return false;
+            }
         }
-
-        final JSONObject arg_object = args.getJSONObject(0);
-
-        switch(action){
-            case "authenticate":
-            authenticateFingerprint(arg_object);
-            return true;
-            case "isAdi":
-            isAdi();
-            return true;
-            case "isAvailable":
-            isFingerprintAvailable();
-            return true;
-            default:
-            Log.i(TAG,"default action");
+        catch (Exception ex){
+            Log.d(TAG,"exception: ", ex);
             return false;
         }
     }
@@ -366,7 +373,7 @@ public class TouchID extends CordovaPlugin {
         return false;
     }
 
-    private void isAdi(){
+    private void isAdi() throws JSONException{
         System.out.println("isAdi");
         Log.v(TAG,"isAdi");
         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -374,13 +381,13 @@ public class TouchID extends CordovaPlugin {
             mCallbackContext.sendPluginResult(mPluginResult);
     }
 
-    private void authenticateFingerprint(JSONObject arg_object){
+    private void authenticateFingerprint(JSONObject arg_object) throws JSONException{
 
         if (!arg_object.has("clientId") || !arg_object.has("clientSecret")) {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
                 mCallbackContext.error(errorResponse.put("message", "Missing required parameters"));
                 mCallbackContext.sendPluginResult(mPluginResult);
-                return true;
+//                return true;
             }
             mClientId = arg_object.getString("clientId");
             mClientSecret = arg_object.getString("clientSecret");
@@ -459,7 +466,7 @@ public class TouchID extends CordovaPlugin {
         }
     }
 
-    private void isFingerprintAvailable(){
+    private void isFingerprintAvailable() throws JSONException{
         Log.i(TAG, "inside is available");
             // console.log("inside is available");
             if(mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints()){

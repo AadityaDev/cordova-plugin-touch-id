@@ -24,7 +24,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.text.method.Touch;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +64,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     public FingerprintAuthenticationDialogFragment() {
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +73,9 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         setRetainInstance(true);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog);
 
-        mKeyguardManager = (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
+        mKeyguardManager = (KeyguardManager) getActivity().getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         mFingerprintUiHelperBuilder = new FingerprintUiHelper.FingerprintUiHelperBuilder(
-                getContext(), getContext().getSystemService(FingerprintManager.class));
+                getActivity().getApplicationContext(), getActivity().getApplicationContext().getSystemService(FingerprintManager.class));
 
     }
 
@@ -84,25 +88,25 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
         int fingerprint_auth_dialog_title_id = getResources()
                 .getIdentifier("aio_fingerprint_auth_dialog_title", "string",
-                        Fingerprint.packageName);
+                        TouchID.packageName);
         getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
         int fingerprint_dialog_container_id = getResources()
                 .getIdentifier("aio_fingerprint_dialog_container", "layout",
-                        Fingerprint.packageName);
+                        TouchID.packageName);
         View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
         int cancel_button_id = getResources()
-                .getIdentifier("cancel_button", "id", Fingerprint.packageName);
+                .getIdentifier("cancel_button", "id", TouchID.packageName);
         mCancelButton = (Button) v.findViewById(cancel_button_id);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fingerprint.onCancelled();
+                TouchID.onCancelled();
                 dismissAllowingStateLoss();
             }
         });
 
         int second_dialog_button_id = getResources()
-                .getIdentifier("second_dialog_button", "id", Fingerprint.packageName);
+                .getIdentifier("second_dialog_button", "id", TouchID.packageName);
         mSecondDialogButton = (Button) v.findViewById(second_dialog_button_id);
         if (disableBackup) {
             mSecondDialogButton.setVisibility(View.GONE);
@@ -114,17 +118,17 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
             }
         });
         int fingerprint_container_id = getResources()
-                .getIdentifier("fingerprint_container", "id", Fingerprint.packageName);
+                .getIdentifier("fingerprint_container", "id", TouchID.packageName);
         mFingerprintContent = v.findViewById(fingerprint_container_id);
 
         int new_fingerprint_enrolled_description_id = getResources()
                 .getIdentifier("aio_new_fingerprint_enrolled_description", "id",
-                        Fingerprint.packageName);
+                        TouchID.packageName);
 
         int fingerprint_icon_id = getResources()
-                .getIdentifier("fingerprint_icon", "id", Fingerprint.packageName);
+                .getIdentifier("fingerprint_icon", "id", TouchID.packageName);
         int fingerprint_status_id = getResources()
-                .getIdentifier("fingerprint_status", "id", Fingerprint.packageName);
+                .getIdentifier("fingerprint_status", "id", TouchID.packageName);
         mFingerprintUiHelper = mFingerprintUiHelperBuilder.build(
                 (ImageView) v.findViewById(fingerprint_icon_id),
                 (TextView) v.findViewById(fingerprint_status_id), this);
@@ -172,7 +176,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     private void goToBackup() {
         if(disableBackup)
         {
-            Fingerprint.onCancelled(); 
+            TouchID.onCancelled();
             dismissAllowingStateLoss();
         }
         else{
@@ -183,12 +187,12 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     private void updateStage() {
         int cancel_id = getResources()
-                .getIdentifier("aio_fingerprint_cancel", "string", Fingerprint.packageName);
+                .getIdentifier("aio_fingerprint_cancel", "string", TouchID.packageName);
         switch (mStage) {
             case FINGERPRINT:
                 mCancelButton.setText(cancel_id);
                 int use_backup_id = getResources()
-                        .getIdentifier("aio_fingerprint_use_backup", "string", Fingerprint.packageName);
+                        .getIdentifier("aio_fingerprint_use_backup", "string", TouchID.packageName);
                 mSecondDialogButton.setText(use_backup_id);
                 mFingerprintContent.setVisibility(View.VISIBLE);
                 break;
@@ -202,8 +206,8 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                     // Show a message that the user hasn't set up a lock screen.
                     int secure_lock_screen_required_id = getResources()
                             .getIdentifier("aio_secure_lock_screen_required", "string",
-                                    Fingerprint.packageName);
-                    Toast.makeText(getContext(),
+                                    TouchID.packageName);
+                    Toast.makeText(getActivity().getApplicationContext(),
                             getString(secure_lock_screen_required_id),
                             Toast.LENGTH_LONG).show();
                     return;
@@ -216,7 +220,10 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     private void showAuthenticationScreen() {
         // Create the Confirm Credentials screen. You can customize the title and description. Or
         // we will provide a generic one for you if you leave it null
-        Intent intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
+        Intent intent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
+        }
         if (intent != null) {
             startActivityForResult(intent, REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS);
         }
@@ -227,11 +234,11 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
             // Challenge completed, proceed with using cipher
             if (resultCode == getActivity().RESULT_OK) {
-                Fingerprint.onAuthenticated(false /* used backup */);
+                TouchID.onAuthenticated(false /* used backup */);
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
-                Fingerprint.onCancelled();
+                TouchID.onCancelled();
             }
             dismissAllowingStateLoss();
         }
@@ -241,7 +248,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     public void onAuthenticated() {
         // Callback from FingerprintUiHelper. Let the activity know that authentication was
         // successful.
-        Fingerprint.onAuthenticated(true /* withFingerprint */);
+        TouchID.onAuthenticated(true /* withFingerprint */);
         dismissAllowingStateLoss();
     }
 
@@ -254,7 +261,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        Fingerprint.onCancelled();
+        TouchID.onCancelled();
     }
 
     /**
